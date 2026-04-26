@@ -1,4 +1,4 @@
-FROM rust:alpine AS build-development
+FROM rust:alpine AS build-development-deps
 RUN apk add --no-cache musl-dev
 WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
@@ -16,6 +16,7 @@ RUN mkdir -p fb/src/bin \
     && cargo build \
     && rm -rf fb/src
 
+FROM build-development-deps AS build-development
 COPY fb/src ./fb/src
 COPY fb/migrations ./fb/migrations
 RUN touch fb/src/bin/main.rs fb/src/bin/migration.rs fb/src/bin/doc.rs && cargo build
@@ -42,24 +43,7 @@ COPY fb/src ./fb/src
 COPY fb/migrations ./fb/migrations
 RUN touch fb/src/bin/main.rs fb/src/bin/migration.rs fb/src/bin/doc.rs && cargo build --release
 
-FROM rust:alpine AS build-migration
-RUN apk add --no-cache musl-dev
-WORKDIR /app
-COPY Cargo.toml Cargo.lock ./
-COPY fb/Cargo.toml ./fb/
-COPY fb-macros/Cargo.toml ./fb-macros/
-RUN cargo fetch
-
-COPY fb-macros/src ./fb-macros/src
-
-# Dependency caching layer
-RUN mkdir -p fb/src/bin \
-    && echo 'fn main() {}' > fb/src/bin/main.rs \
-    && echo 'fn main() {}' > fb/src/bin/migration.rs \
-    && echo 'fn main() {}' > fb/src/bin/doc.rs \
-    && cargo build --bin migration \
-    && rm -rf fb/src
-
+FROM build-development AS build-migration
 COPY fb/src ./fb/src
 COPY fb/migrations ./fb/migrations
 RUN touch fb/src/bin/migration.rs && cargo build --bin migration
