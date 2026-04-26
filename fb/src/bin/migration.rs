@@ -17,7 +17,7 @@ async fn main() {
         .await
         .expect("db connect");
 
-    sqlx::migrate!("./migrations")
+    sqlx::migrate!("../migrations")
         .run(&db)
         .await
         .expect("migrations");

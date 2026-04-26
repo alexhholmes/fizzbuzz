@@ -1,3 +1,4 @@
 [workspace]
 members = ["fb", "fb-macros"]
+default-members = ["fb"]
 resolver = "2"

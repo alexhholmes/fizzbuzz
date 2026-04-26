@@ -3,66 +3,60 @@ RUN apk add --no-cache musl-dev
 WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 COPY fb/Cargo.toml ./fb/
-COPY fb-macros/Cargo.toml ./fb-macros/
+COPY fb-macros ./fb-macros/
 RUN cargo fetch
-
-COPY fb-macros/src ./fb-macros/src
 
 # Dependency caching layer
 RUN mkdir -p fb/src/bin \
     && echo 'fn main() {}' > fb/src/bin/main.rs \
     && echo 'fn main() {}' > fb/src/bin/migration.rs \
     && echo 'fn main() {}' > fb/src/bin/doc.rs \
-    && cargo build \
+    && cargo build -p fb \
     && rm -rf fb/src
 
 COPY fb/src ./fb/src
-COPY fb/migrations ./fb/migrations
-RUN touch fb/src/bin/main.rs fb/src/bin/migration.rs fb/src/bin/doc.rs && cargo build
+COPY migrations .
+RUN touch fb/src/bin/main.rs && cargo build -p fb --bin fizzbuzz
 
 FROM rust:alpine AS build-release
 RUN apk add --no-cache musl-dev
 WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 COPY fb/Cargo.toml ./fb/
-COPY fb-macros/Cargo.toml ./fb-macros/
+COPY fb-macros ./fb-macros/
 RUN cargo fetch
-
-COPY fb-macros/src ./fb-macros/src
 
 # Dependency caching layer
 RUN mkdir -p fb/src/bin \
     && echo 'fn main() {}' > fb/src/bin/main.rs \
     && echo 'fn main() {}' > fb/src/bin/migration.rs \
     && echo 'fn main() {}' > fb/src/bin/doc.rs \
-    && cargo build --release \
+    && cargo build -p fb --release \
     && rm -rf fb/src
 
 COPY fb/src ./fb/src
-COPY fb/migrations ./fb/migrations
-RUN touch fb/src/bin/main.rs fb/src/bin/migration.rs fb/src/bin/doc.rs && cargo build --release
+COPY migrations .
+RUN touch fb/src/bin/main.rs && cargo build -p fb --release --bin fizzbuzz
 
 FROM rust:alpine AS build-migration
 RUN apk add --no-cache musl-dev
 WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 COPY fb/Cargo.toml ./fb/
-COPY fb-macros/Cargo.toml ./fb-macros/
+COPY fb-macros ./fb-macros/
 RUN cargo fetch
-
-COPY fb-macros/src ./fb-macros/src
 
 # Dependency caching layer
 RUN mkdir -p fb/src/bin \
     && echo 'fn main() {}' > fb/src/bin/main.rs \
     && echo 'fn main() {}' > fb/src/bin/migration.rs \
     && echo 'fn main() {}' > fb/src/bin/doc.rs \
-    && cargo build --bin migration \
+    && cargo build -p fb \
     && rm -rf fb/src
 
 COPY fb/src ./fb/src
-COPY fb/migrations ./fb/migrations
-RUN touch fb/src/bin/migration.rs && cargo build --bin migration
+COPY migrations ./migrations
+RUN touch fb/src/bin/migration.rs && CARGO_MANIFEST_DIR=/app cargo build -p fb --bin migration
 
 FROM alpine:latest AS development
 WORKDIR /app
