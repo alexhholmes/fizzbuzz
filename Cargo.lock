@@ -563,6 +563,7 @@ dependencies = [
  "fb-macros",
  "redis",
  "serde",
+ "serde_json",
  "sqlx",
  "tokio",
  "tower-http",
@@ -577,6 +578,7 @@ dependencies = [
 name = "fb-macros"
 version = "0.1.0"
 dependencies = [
+ "proc-macro2",
  "quote",
  "syn",
 ]

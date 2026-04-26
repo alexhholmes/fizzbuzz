@@ -99,22 +99,10 @@ pub async fn post_exception(
     let mut cache = res.cache;
     if created {
         cache
-            .set_with_bf_add(
-                "bf:exceptions",
-                &exception.n.to_string(),
-                &format!("exception:{}", exception.n),
-                &exception.result,
-                300,
-            )
+            .set_with_bf_add("bf:exceptions", &exception.n.to_string(), &exception, 300)
             .await;
     } else {
-        cache
-            .set(
-                &format!("exception:{}", exception.n),
-                &exception.result,
-                300,
-            )
-            .await;
+        cache.set(&exception, 300).await;
     }
 
     let status = if created {

@@ -16,9 +16,9 @@
     "/exceptions": {
       "get": {
         "tags": [
-          "exceptions"
+          "exception"
         ],
-        "operationId": "get_exceptions",
+        "operationId": "get_exception_list",
         "responses": {
           "200": {
             "description": "",
@@ -40,7 +40,7 @@
       },
       "post": {
         "tags": [
-          "exceptions"
+          "exception"
         ],
         "operationId": "post_exception",
         "requestBody": {
@@ -83,7 +83,7 @@
     "/exceptions/{n}": {
       "get": {
         "tags": [
-          "exceptions"
+          "exception"
         ],
         "operationId": "get_exception",
         "parameters": [

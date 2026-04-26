@@ -1,9 +1,10 @@
 use chrono::{DateTime, Utc};
-use fb_macros::Cacheable;
+use fb_macros::cache;
 use serde::Serialize;
 use sqlx::FromRow;
 
-#[derive(Debug, Cacheable, Serialize, FromRow)]
+#[cache(key = "exception", field = "n")]
+#[derive(Debug, Serialize, FromRow)]
 pub struct Exception {
     pub n: i64,
     pub result: String,

@@ -5,6 +5,7 @@ use redis::AsyncCommands;
 use tracing::warn;
 
 use crate::config::Config;
+use crate::models::Cacheable;
 
 #[derive(Clone)]
 pub struct Cache {
@@ -59,11 +60,19 @@ impl Cache {
         }
     }
 
-    pub async fn set(&mut self, key: &str, value: &str, ttl_secs: u64) -> bool {
+    pub async fn set<T: Cacheable>(&mut self, value: &T, ttl_secs: u64) -> bool {
         let Some(conn) = self.conn.as_mut() else {
             return false;
         };
-        match conn.set_ex::<_, _, ()>(key, value, ttl_secs).await {
+        let key = value.cache_key();
+        let serialized = match serde_json::to_string(value) {
+            Ok(s) => s,
+            Err(e) => {
+                warn!(error = %e, "cache set serialization failed");
+                return false;
+            }
+        };
+        match conn.set_ex::<_, _, ()>(&key, serialized, ttl_secs).await {
             Ok(_) => true,
             Err(e) => {
                 warn!(error = %e, key, "cache set failed");
@@ -121,16 +130,23 @@ impl Cache {
         }
     }
 
-    pub async fn set_with_bf_add(
+    pub async fn set_with_bf_add<T: Cacheable>(
         &mut self,
         bloom_key: &str,
         item: &str,
-        cache_key: &str,
-        value: &str,
+        value: &T,
         ttl_secs: u64,
     ) -> bool {
         let Some(conn) = self.conn.as_mut() else {
             return false;
+        };
+        let cache_key = value.cache_key();
+        let serialized = match serde_json::to_string(value) {
+            Ok(s) => s,
+            Err(e) => {
+                warn!(error = %e, "set_with_bf_add serialization failed");
+                return false;
+            }
         };
         if let Err(e) = redis::cmd("BF.ADD")
             .arg(bloom_key)
@@ -144,7 +160,7 @@ impl Cache {
         let Some(conn) = self.conn.as_mut() else {
             return false;
         };
-        match conn.set_ex::<_, _, ()>(cache_key, value, ttl_secs).await {
+        match conn.set_ex::<_, _, ()>(&cache_key, serialized, ttl_secs).await {
             Ok(_) => true,
             Err(e) => {
                 warn!(error = %e, cache_key, "set_with_bloom set failed");
