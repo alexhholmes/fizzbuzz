@@ -1,0 +1,3 @@
+[workspace]
+members = ["fb", "fb-macros"]
+resolver = "2"

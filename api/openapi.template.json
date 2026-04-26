@@ -1,0 +1,13 @@
+{
+  "info": {
+    "title": "FizzBuzz API",
+    "description": "fizzbuzz-as-a-service",
+    "contact": {
+      "name": "Alex Holmes"
+    },
+    "license": {
+      "name": "MIT",
+      "identifier": "MIT"
+    }
+  }
+}

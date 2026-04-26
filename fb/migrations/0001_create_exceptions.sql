@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS exceptions (
+    n BIGINT PRIMARY KEY,
+    result TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    modified_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

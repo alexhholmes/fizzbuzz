@@ -1,0 +1,206 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FizzBuzz API",
+    "description": "fizzbuzz-as-a-service",
+    "license": {
+      "name": "MIT",
+      "identifier": "MIT"
+    },
+    "version": "0.1.0",
+    "contact": {
+      "name": "Alex Holmes"
+    }
+  },
+  "paths": {
+    "/exceptions": {
+      "get": {
+        "tags": [
+          "exceptions"
+        ],
+        "operationId": "get_exceptions",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExceptionResponse"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "exceptions"
+        ],
+        "operationId": "post_exception",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExceptionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/exceptions/{n}": {
+      "get": {
+        "tags": [
+          "exceptions"
+        ],
+        "operationId": "get_exception",
+        "parameters": [
+          {
+            "name": "n",
+            "in": "path",
+            "description": "Exception key",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExceptionResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": ""
+          },
+          "500": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/fizzbuzz/{n}": {
+      "get": {
+        "tags": [
+          "fizzbuzz"
+        ],
+        "operationId": "get_fizzbuzz",
+        "parameters": [
+          {
+            "name": "n",
+            "in": "path",
+            "description": "Integer to fizzbuzz",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetFizzBuzzResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ExceptionRequest": {
+        "type": "object",
+        "required": [
+          "n",
+          "result"
+        ],
+        "properties": {
+          "n": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "result": {
+            "type": "string"
+          }
+        }
+      },
+      "ExceptionResponse": {
+        "type": "object",
+        "required": [
+          "n",
+          "result"
+        ],
+        "properties": {
+          "n": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "result": {
+            "type": "string"
+          }
+        }
+      },
+      "GetFizzBuzzResponse": {
+        "type": "object",
+        "required": [
+          "n",
+          "result"
+        ],
+        "properties": {
+          "n": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "result": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
